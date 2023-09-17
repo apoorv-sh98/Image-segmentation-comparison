@@ -1,1 +1,15 @@
 # Image-segmentation-comparison
+
+## Dataset
+The chest x-ray dataset we used is derived from Shenzhen and Montgomery dataset - https://www.kaggle.com/competitions/rsna-pneumonia-detection-challenge/data. The dataset we used comprised of 704 pairs of lung x-ray images with its binary mask. After pre-processing the data and removing the noisy images, we received the final 566 total images. We divided the dataset into training, validation and testing sets in the ratio of 81:9:10. The output of this ratio resulted into 458 training images, 57 validation images and 51 testing images. The test set is used to compare the outputs of both the models i.e. the morphology based CLAHE model and segmentation using U-Net based model.
+
+## Implementation
+
+### CLAHE based morphological segmentation
+The CLAHE based morphological segmentation is performed using a series of techniques sequentially. After the masking of thoracic region is performed, the output is enhanced using CLAHE. This enhanced output is given to two parallel processes, namely Harris corner detection and Blackhat transform followed by Otsu’s segmentation. The output of these two paths is multiplied elementwise. The remainder would then undergo three iterations of morphological erosion and six iterations of dilations and is then feed into image altering process.
+
+### U-Net based approach
+The preprocessing of the data for U-Net model includes resizing the images to a common size of 512x512 and then scaling the images from 0 to 2. After this pre-processing, the result is fed into the U-Net model like its original implementation. The input will contain the chest x-ray images and their respective binary masks having segmented lungs. The model will output a 2D binary segmented map that assigns a class label to each pixel in the image. We have used dice coefficient and dice binary cross entropy (BCE) loss for the evaluation of loss while running the U-Net model. By combining these two, we will be able to balance the importance of both accuracy and overlap in segmentation task. For this U-Net model, we have used the Adam optimizer and combines the benefits of SGD with another optimization algorithm, RProp (Resilient Propagation). In Addition, we have used the ReduceLROnPlateau() which is a callback function in Keras used to reduce the learning rate of the optimizer when the model’s performance stops improving. We have also implemented EarlyStopping(), which is also callback function in Keras, which is used to stop training a model when the model's performance stops improving.
+
+## Conclusion
+This study compared the performance of a U-Net based image segmentation approach with a CLAHE based morphological segmentation approach for CXR images. The U-Net model showed better performance in terms of dice coefficient and binary accuracy, indicating that it is a more effective method for segmenting CXR images. However, the CLAHE based approach still showed good performance and may be suitable for certain applications. Further research could be conducted to improve the performance of both approaches and to evaluate their performance on larger datasets.
